@@ -1,0 +1,9 @@
+<mat-chip
+  class="badge-chip"
+  [class.badge-chip--locked]="!unlocked"
+  [matTooltip]="badge.description"
+  matTooltipPosition="above"
+>
+  <mat-icon class="badge-chip__icon">{{ badge.icon }}</mat-icon>
+  <span>{{ badge.label }}</span>
+</mat-chip>

@@ -1,0 +1,58 @@
+.leaderboard-page {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  background: var(--ml-bg);
+  min-height: calc(100vh - 64px);
+}
+
+.leaderboard-card {
+  width: 100%;
+  max-width: 640px;
+}
+
+.leaderboard-row {
+  border-radius: 10px;
+  margin-bottom: 6px;
+
+  &--me {
+    background: rgba(79, 209, 197, 0.1);
+    border: 1px solid var(--ml-xp);
+  }
+
+  &__rank-icon {
+    color: var(--ml-flame);
+  }
+
+  &__name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  &__you-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    background: var(--ml-xp);
+    color: #05261f;
+    padding: 1px 6px;
+    border-radius: 999px;
+  }
+
+  &__meta {
+    color: var(--ml-text-secondary);
+    font-size: 12px;
+  }
+
+  &__xp {
+    font-weight: 700;
+    color: var(--ml-xp);
+  }
+}
+
+.leaderboard-empty {
+  color: var(--ml-text-secondary);
+  text-align: center;
+  padding: 24px;
+}

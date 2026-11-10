@@ -1,0 +1,42 @@
+<mat-toolbar color="primary">
+  <a mat-icon-button routerLink="/dashboard" aria-label="Back to dashboard">
+    <mat-icon>arrow_back</mat-icon>
+  </a>
+  <span>Leaderboard</span>
+</mat-toolbar>
+
+<div class="leaderboard-page">
+  <mat-card class="ml-card-surface leaderboard-card">
+    <mat-card-header>
+      <mat-card-title>Top Learners</mat-card-title>
+      <mat-card-subtitle>Ranked by total XP earned</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-nav-list>
+        @for (user of topUsers(); track user.uid; let i = $index) {
+          <mat-list-item
+            class="leaderboard-row"
+            [class.leaderboard-row--me]="user.uid === currentUserId()"
+          >
+            <mat-icon matListItemIcon class="leaderboard-row__rank-icon">
+              {{ rankIcon(i) }}
+            </mat-icon>
+            <div matListItemTitle class="leaderboard-row__name">
+              {{ user.displayName }}
+              @if (user.uid === currentUserId()) {
+                <span class="leaderboard-row__you-tag">you</span>
+              }
+            </div>
+            <div matListItemLine class="leaderboard-row__meta">
+              {{ user.currentStreak }} day streak &middot; {{ user.quizzesCompleted }} quizzes
+            </div>
+            <div class="leaderboard-row__xp">{{ user.totalXp }} XP</div>
+          </mat-list-item>
+        } @empty {
+          <p class="leaderboard-empty">No learners on the board yet. Be the first!</p>
+        }
+      </mat-nav-list>
+    </mat-card-content>
+  </mat-card>
+</div>

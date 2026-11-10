@@ -1,0 +1,146 @@
+<div class="quiz-page">
+  @if (quiz(); as activeQuiz) {
+    @if (!isQuizComplete()) {
+      <div class="quiz-runner">
+        <div class="quiz-runner__header">
+          <div class="quiz-runner__title">{{ activeQuiz.title }}</div>
+          <div class="quiz-runner__question-count">{{ questionNumberLabel() }}</div>
+        </div>
+
+        <div class="quiz-runner__timer">
+          <mat-progress-bar
+            mode="determinate"
+            [value]="progressPercent()"
+            [color]="timerColor()"
+          ></mat-progress-bar>
+          <div class="quiz-runner__timer-label">
+            <mat-icon>timer</mat-icon>
+            {{ remainingSeconds() }}s remaining
+          </div>
+        </div>
+
+        @if (currentQuestion(); as question) {
+          <mat-card class="ml-card-surface quiz-runner__card">
+            <mat-card-content>
+              <h2 class="quiz-runner__prompt">{{ question.prompt }}</h2>
+
+              <mat-selection-list
+                [multiple]="false"
+                class="quiz-runner__options"
+              >
+                @for (option of question.options; track $index) {
+                  <mat-list-option
+                    [selected]="selectedOptionIndex() === $index"
+                    [disabled]="feedback() !== 'unanswered'"
+                    (click)="selectOption($index)"
+                    class="quiz-runner__option"
+                    [class.quiz-runner__option--correct]="optionState($index) === 'correct'"
+                    [class.quiz-runner__option--incorrect]="optionState($index) === 'incorrect'"
+                    [class.quiz-runner__option--missed]="optionState($index) === 'missed'"
+                  >
+                    <div class="quiz-runner__option-content">
+                      <span>{{ option }}</span>
+                      @if (optionState($index) === 'correct') {
+                        <mat-icon class="quiz-runner__option-icon">check_circle</mat-icon>
+                      }
+                      @if (optionState($index) === 'incorrect') {
+                        <mat-icon class="quiz-runner__option-icon">cancel</mat-icon>
+                      }
+                      @if (optionState($index) === 'missed') {
+                        <mat-icon class="quiz-runner__option-icon">arrow_upward</mat-icon>
+                      }
+                    </div>
+                  </mat-list-option>
+                }
+              </mat-selection-list>
+
+              @if (feedback() !== 'unanswered') {
+                <div
+                  class="quiz-runner__explanation"
+                  [class.quiz-runner__explanation--correct]="feedback() === 'correct'"
+                  [class.quiz-runner__explanation--incorrect]="feedback() === 'incorrect'"
+                  [appBounce]="feedback() !== 'unanswered'"
+                >
+                  <strong>{{ feedback() === 'correct' ? 'Correct!' : 'Not quite.' }}</strong>
+                  {{ question.explanation }}
+                </div>
+
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="quiz-runner__next-btn"
+                  (click)="goToNextQuestion()"
+                >
+                  Next Question
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <div class="quiz-results" [appBounce]="isQuizComplete()" bounceClass="quiz-results--pop">
+        <mat-card class="ml-card-surface quiz-results__card">
+          <mat-card-content>
+            <mat-icon class="quiz-results__icon">
+              {{ result()?.isPerfect ? 'emoji_events' : 'task_alt' }}
+            </mat-icon>
+            <h1 class="quiz-results__title">
+              {{ isTimedOut() ? "Time's up!" : 'Quiz Complete!' }}
+            </h1>
+            <p class="quiz-results__score">
+              {{ result()?.correctCount ?? 0 }} / {{ result()?.totalQuestions ?? 0 }} correct
+            </p>
+
+            <div class="quiz-results__xp">
+              <mat-icon>bolt</mat-icon>
+              +{{ result()?.xpEarned ?? 0 }} XP earned
+            </div>
+
+            @if (result()?.isPerfect) {
+              <mat-chip-set class="quiz-results__perfect-chip">
+                <mat-chip color="accent" highlighted>Perfect Run!</mat-chip>
+              </mat-chip-set>
+            }
+
+            @if (isSaving()) {
+              <p class="quiz-results__saving">Saving your progress...</p>
+            } @else if (newBadgeIds().length > 0) {
+              <div class="quiz-results__badges">
+                <p>New badges unlocked:</p>
+                <mat-chip-set>
+                  @for (badgeId of newBadgeIds(); track badgeId) {
+                    <mat-chip color="primary" highlighted>{{ badgeId }}</mat-chip>
+                  }
+                </mat-chip-set>
+              </div>
+            }
+
+            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap;">
+              <button
+                mat-stroked-button
+                color="primary"
+                (click)="retryCurrentQuiz()"
+              >
+                <mat-icon>replay</mat-icon> Retry Quiz
+              </button>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="backToDashboard()"
+              >
+                Back to Dashboard
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  } @else {
+    <div class="quiz-loading">
+      <mat-icon>hourglass_top</mat-icon>
+      <span>Loading quiz...</span>
+    </div>
+  }
+</div>

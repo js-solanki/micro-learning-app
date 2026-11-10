@@ -1,0 +1,72 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$ml-primary: mat.define-palette(mat.$indigo-palette, 400);
+$ml-accent: mat.define-palette(mat.$amber-palette, 400);
+$ml-warn: mat.define-palette(mat.$red-palette, 500);
+
+$ml-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $ml-primary,
+    accent: $ml-accent,
+    warn: $ml-warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+@include mat.all-component-themes($ml-dark-theme);
+
+:root {
+  --ml-bg: #0f1117;
+  --ml-surface: #171a23;
+  --ml-surface-alt: #1f2330;
+  --ml-border: #2a2f3d;
+  --ml-text-primary: #f2f3f7;
+  --ml-text-secondary: #9aa0b4;
+  --ml-flame: #ff9f43;
+  --ml-xp: #4fd1c5;
+  --ml-success: #4caf50;
+  --ml-error: #ef5350;
+  --ml-radius: 14px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--ml-bg);
+  color: var(--ml-text-primary);
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.dark-theme {
+  color-scheme: dark;
+}
+
+.ml-card-surface {
+  background: var(--ml-surface);
+  border: 1px solid var(--ml-border);
+  border-radius: var(--ml-radius);
+}
+
+.ml-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ml-scroll::-webkit-scrollbar-thumb {
+  background: var(--ml-surface-alt);
+  border-radius: 8px;
+}
+
+@keyframes ml-bounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.18); }
+  55%  { transform: scale(0.94); }
+  75%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}

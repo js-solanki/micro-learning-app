@@ -1,0 +1,58 @@
+<div class="result-dialog-header">
+  <div class="result-dialog-title-group">
+    <h2 mat-dialog-title>{{ data.quiz.title }}</h2>
+    <mat-chip-set>
+      <mat-chip color="accent" highlighted>{{ data.quiz.category }}</mat-chip>
+    </mat-chip-set>
+  </div>
+  <button mat-icon-button (click)="close()" aria-label="Close dialog">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="result-dialog-content">
+  <div class="score-card">
+    <div class="score-main">
+      <div class="score-big">
+        {{ data.history.correctCount }} / {{ data.history.totalQuestions }}
+      </div>
+      <div class="score-percent">{{ scorePercentage }}% Accuracy</div>
+    </div>
+
+    @if (data.history.isPerfect) {
+      <div class="perfect-badge">
+        <mat-icon>emoji_events</mat-icon> Perfect Score!
+      </div>
+    }
+  </div>
+
+  <div class="progress-section">
+    <mat-progress-bar
+      mode="determinate"
+      [value]="scorePercentage"
+      [color]="scorePercentage >= 80 ? 'primary' : scorePercentage >= 50 ? 'accent' : 'warn'"
+    ></mat-progress-bar>
+  </div>
+
+  <div class="details-list">
+    <div class="detail-item">
+      <mat-icon color="primary">bolt</mat-icon>
+      <span>XP Earned: <strong>+{{ data.history.xpEarned }} XP</strong></span>
+    </div>
+    <div class="detail-item">
+      <mat-icon color="accent">replay</mat-icon>
+      <span>Times Attempted: <strong>{{ data.history.attemptsCount }}</strong></span>
+    </div>
+    <div class="detail-item">
+      <mat-icon>schedule</mat-icon>
+      <span>Last Attempt: <strong>{{ completedDateFormatted }}</strong></span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="result-dialog-actions">
+  <button mat-button (click)="close()">Close</button>
+  <button mat-raised-button color="accent" (click)="retryQuiz()">
+    <mat-icon>replay</mat-icon> Retry Quiz
+  </button>
+</mat-dialog-actions>

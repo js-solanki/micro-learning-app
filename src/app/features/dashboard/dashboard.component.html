@@ -1,0 +1,166 @@
+<mat-toolbar class="app-toolbar" color="primary">
+  <button mat-icon-button (click)="toggleSidenav()" aria-label="Toggle navigation">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="app-toolbar__title">
+    <mat-icon>local_fire_department</mat-icon>
+    Micro-Learning
+  </span>
+  <span class="app-toolbar__spacer"></span>
+
+  <div class="app-toolbar__streak" [appBounce]="streakJustLoaded()">
+    <mat-icon>local_fire_department</mat-icon>
+    <span>{{ currentStreak() }} day streak</span>
+  </div>
+
+  <div class="app-toolbar__xp">
+    <mat-icon>bolt</mat-icon>
+    <span>{{ totalXp() }} XP</span>
+  </div>
+
+  <button mat-icon-button (click)="logout()" aria-label="Log out">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-sidenav-container class="app-shell">
+  <mat-sidenav
+    class="app-sidenav"
+    mode="side"
+    [opened]="sidenavOpened()"
+  >
+    <div class="app-sidenav__profile">
+      @if (photoURL()) {
+        <img [src]="photoURL()" alt="Profile photo" class="app-sidenav__avatar" />
+      } @else {
+        <div class="app-sidenav__avatar app-sidenav__avatar--fallback">
+          <mat-icon>person</mat-icon>
+        </div>
+      }
+      <div class="app-sidenav__name">{{ displayName() }}</div>
+      <div class="app-sidenav__level">Level {{ currentLevel() }}</div>
+    </div>
+
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+      <a mat-list-item routerLink="/leaderboard">
+        <mat-icon matListItemIcon>leaderboard</mat-icon>
+        <span matListItemTitle>Leaderboard</span>
+      </a>
+      <a mat-list-item routerLink="/add-quizzes">
+        <mat-icon matListItemIcon>post_add</mat-icon>
+        <span matListItemTitle>Add Quizzes</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="app-content ml-scroll">
+    <div class="dashboard-grid">
+      <mat-card class="ml-card-surface stat-card">
+        <mat-card-content class="stat-card__content">
+          <mat-icon class="stat-card__icon stat-card__icon--flame">local_fire_department</mat-icon>
+          <div>
+            <div class="stat-card__value">{{ currentStreak() }}</div>
+            <div class="stat-card__label">Day Streak</div>
+            <div class="stat-card__sub">Longest: {{ longestStreak() }} days</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="ml-card-surface stat-card">
+        <mat-card-content class="stat-card__content">
+          <mat-icon class="stat-card__icon stat-card__icon--xp">bolt</mat-icon>
+          <div class="stat-card__xp-block">
+            <div class="stat-card__value">{{ totalXp() }} XP</div>
+            <div class="stat-card__label">Level {{ currentLevel() }}</div>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="levelProgressPercent()"
+              class="stat-card__xp-bar"
+            ></mat-progress-bar>
+            <div class="stat-card__sub">{{ xpIntoLevel() }} / 100 XP to next level</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="ml-card-surface stat-card">
+        <mat-card-content class="stat-card__content">
+          <mat-icon class="stat-card__icon stat-card__icon--quiz">school</mat-icon>
+          <div>
+            <div class="stat-card__value">{{ quizzesCompleted() }}</div>
+            <div class="stat-card__label">Quizzes Completed</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <mat-card class="ml-card-surface badges-card">
+      <mat-card-header>
+        <mat-card-title>Badge Gallery</mat-card-title>
+        <mat-card-subtitle>Unlock more by keeping your streak and earning XP</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-chip-set>
+          @for (badge of badgeCatalog; track badge.id) {
+            <app-badge-chip
+              [badge]="badge"
+              [unlocked]="isBadgeUnlocked(badge.id)"
+            ></app-badge-chip>
+          }
+        </mat-chip-set>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="ml-card-surface quizzes-card">
+      <mat-card-header style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div>
+          <mat-card-title>Today's Quizzes</mat-card-title>
+          <mat-card-subtitle>Two minutes. Instant feedback. Real XP.</mat-card-subtitle>
+        </div>
+        <button mat-stroked-button color="primary" (click)="seedQuizzes()" title="Upload sample quizzes to Cloud Firestore">
+          <mat-icon>cloud_upload</mat-icon> Sync to Database
+        </button>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content class="quizzes-card__list">
+        @for (quiz of quizzes(); track quiz.id) {
+          <div class="quizzes-card__item">
+            <div>
+              <div class="quizzes-card__item-title">
+                {{ quiz.title }}
+                @if (getQuizHistory(quiz.id); as history) {
+                  <span class="completed-tag">
+                    <mat-icon>check_circle</mat-icon> {{ history.correctCount }}/{{ history.totalQuestions }} Correct
+                  </span>
+                }
+              </div>
+              <div class="quizzes-card__item-meta">
+                {{ quiz.category }} &middot; {{ quiz.questions.length }} questions
+              </div>
+            </div>
+
+            <div class="quizzes-card__item-actions">
+              @if (getQuizHistory(quiz.id); as history) {
+                <button mat-stroked-button color="primary" (click)="openResultDialog(quiz, history)">
+                  <mat-icon>assessment</mat-icon> View Result
+                </button>
+                <a mat-raised-button color="accent" [routerLink]="['/quiz', quiz.id]">
+                  <mat-icon>replay</mat-icon> Retry Quiz
+                </a>
+              } @else {
+                <a mat-raised-button color="accent" [routerLink]="['/quiz', quiz.id]">
+                  Start Quiz
+                </a>
+              }
+            </div>
+          </div>
+        } @empty {
+          <p class="quizzes-card__empty">No quizzes available yet. Check back soon!</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  </mat-sidenav-content>
+</mat-sidenav-container>

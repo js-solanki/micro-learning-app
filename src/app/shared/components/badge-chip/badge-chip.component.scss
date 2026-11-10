@@ -1,0 +1,23 @@
+.badge-chip {
+  background: linear-gradient(135deg, #2b2f45, #1c1f2e) !important;
+  color: var(--ml-text-primary) !important;
+  border: 1px solid var(--ml-border);
+  font-weight: 500;
+
+  &__icon {
+    color: var(--ml-flame);
+    margin-right: 4px;
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+  }
+
+  &--locked {
+    opacity: 0.35;
+    filter: grayscale(1);
+
+    .badge-chip__icon {
+      color: var(--ml-text-secondary);
+    }
+  }
+}
